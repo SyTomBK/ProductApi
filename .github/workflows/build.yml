@@ -11,6 +11,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=ProductDb;Username=postgres;Password=sytombk
+
     services:
       postgres:
         image: postgres:16
@@ -39,6 +42,13 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
+
+      - name: Install EF Tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Apply Migrations
+        run: dotnet ef database update
+        working-directory: src/Product.Api
       
       - name: Test
         run: dotnet test --no-build
