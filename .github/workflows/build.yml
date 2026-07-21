@@ -72,6 +72,11 @@ jobs:
         with:
           name: product-api
           path: artifact
+      
+      - name: Debug artifact
+        run: |
+          ls -la
+          ls -la artifact
 
       - name: Copy artifact to server
         uses: appleboy/scp-action@v0.1.7
