@@ -55,7 +55,11 @@ jobs:
 
       - name: Publish
         run: dotnet publish src/Product.Api/Product.Api.csproj -c Release -o ./publish
-
+        
+      - name: Copy EF Project
+        run: |
+          cp src/Product.Api/Product.Api.csproj ./publish/
+          cp -r src/Product.Api/Migrations ./publish/
       - name: Upload Publish Artifact
         uses: actions/upload-artifact@v4
         with:
