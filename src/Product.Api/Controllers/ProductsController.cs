@@ -75,4 +75,19 @@ public class ProductsController : ControllerBase
         return Ok(productList);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
+    {
+        var affectedRows = await _context.Products
+            .Where(p => p.Id == id)
+            .ExecuteDeleteAsync(cancellationToken);
+        
+        if (affectedRows == 0)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
 }
