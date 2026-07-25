@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Product.Api.Contracts.Products;
 using Product.Api.Data;
+using Product.Api.Entities;
+using System.Threading.Tasks;
 using ProductEntity = Product.Api.Entities.Product;
 
 namespace Product.Api.Controllers;
@@ -55,4 +58,21 @@ public class ProductsController : ControllerBase
             CreatedDate = product.CreatedDate
         });
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProductList(CancellationToken cancellationToken)
+    {
+        var productList = await _context.Products
+            .Select(p => new ProductResponse
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                CreatedDate = p.CreatedDate
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(productList);
+    }
+
 }
