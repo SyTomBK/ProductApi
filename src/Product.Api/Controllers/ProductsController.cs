@@ -62,6 +62,7 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProductList(CancellationToken cancellationToken)
     {
+        return StatusCode(500);
         var productList = await _context.Products
             .Select(p => new ProductResponse
             {
