@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Product.Api.Data;
 using System;
 using Serilog;
+using Prometheus;
 
 Log.Logger = new LoggerConfiguration()
      .WriteTo.Console()
@@ -26,6 +27,8 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseHttpMetrics();
+
 app.UseSerilogRequestLogging();
 
 
@@ -41,5 +44,6 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.MapControllers();
 app.MapHealthChecks("/health");
+app.MapMetrics();
 
 app.Run();
