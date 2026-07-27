@@ -1,6 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Product.Api.Data;
 using System;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+     .WriteTo.Console()
+     .WriteTo.File(
+        "/var/log/product-api/app-.log",
+        rollingInterval: RollingInterval.Day
+    ).CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -11,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Host.UseSerilog();
 
 builder.Services
     .AddHealthChecks().AddNpgSql(builder.Configuration .GetConnectionString("DefaultConnection")!);
