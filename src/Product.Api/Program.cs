@@ -26,6 +26,9 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
