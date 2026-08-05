@@ -1,5 +1,4 @@
 services:
-
   postgres:
 
     image: postgres:16
@@ -16,7 +15,23 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    container_name: product-api
 
+    ports: 
+      - "5000:5000"
+    
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=ProductDb;Username=postgres;Password=postgres
+    
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
