@@ -64,6 +64,9 @@ jobs:
         with:
           name: product-api
           path: publish
+      
+      - name: Docker Build
+        run: docker build -t product-api:${{github.sha}} .
 
   deploy:
     needs: build
