@@ -76,18 +76,22 @@ jobs:
           name: product-api
           path: publish
       
+      - name: Prepare Docker Image
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          echo "IMAGE_NAME=ghcr.io/${OWNER,,}/product-api:${{ github.sha }}" >> "$GITHUB_ENV"
+      
       - name: Docker Build
         run: |
           docker build \
-            -t ghcr.io/${{ github.repository_owner }}/product-api:${{ github.sha }} \
+            -t "$IMAGE_NAME" \
             -f src/Product.Api/Dockerfile \
             src/Product.Api
       
       - name: Docker Push
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/product-api:${{ github.sha }}
+          docker push "$IMAGE_NAME"
           
-
   deploy:
     needs: build
     runs-on: self-hosted
