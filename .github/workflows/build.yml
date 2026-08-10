@@ -120,8 +120,21 @@ jobs:
 
           docker compose up -d
 
-          sleep 5
+          echo "Waiting for application..."
 
-          curl -f http://localhost:5001/health
+          for i in {1..12}; do
+            if curl -f http://localhost:5001/health; then
+              echo "Deployment successful"
+              exit 0
+            fi
 
-          echo "Deployment successful"
+            echo "Application is not ready yet..."
+            sleep 5
+          done
+          
+          echo "Deployment failed"
+
+          docker compose ps
+          docker compose logs --tail=100 api
+
+          exit 1
