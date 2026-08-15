@@ -112,11 +112,31 @@ jobs:
 
           cd /opt/product-api
 
-          echo "Deploying image: $IMAGE_NAME"
+          OWNER="${{ github.repository_owner }}"
+
+          IMAGE_NAME="ghcr.io/${OWNER,,}/product-api:${{ github.sha }}"
+
+          echo "New image:"
+
+          echo "$IMAGE_NAME"
+
+          # Load current version
+          if [ -f version.env ]; then
+            source version.env
+          else
+            CURRENT_IMAGE=""
+            PREVIOUS_IMAGE=""
+          fi
+
+          echo "Current image: $CURRENT_IMAGE"
+
+          # Pull new image
 
           export IMAGE_NAME="$IMAGE_NAME"
 
           docker compose pull
+
+          # Start new version
 
           docker compose up -d
 
@@ -124,17 +144,34 @@ jobs:
 
           for i in {1..12}; do
             if curl -f http://localhost:5001/health; then
-              echo "Deployment successful"
-              exit 0
+              echo "Health check passed"
+              break
             fi
 
-            echo "Application is not ready yet..."
+            echo "Application is not ready..."
             sleep 5
           done
-          
-          echo "Deployment failed"
 
-          docker compose ps
-          docker compose logs --tail=100 api
+          # Final health check
+          if ! curl -f http://localhost:5001/health; then
+            echo "Deployment failed"
 
-          exit 1
+            docker compose ps
+            docker compose logs --tail=100 api
+
+            exit 1
+          fi
+
+          # Deployment successful
+          PREVIOUS_IMAGE="$CURRENT_IMAGE"
+          CURRENT_IMAGE="$IMAGE_NAME"
+
+          cat > version.env <<EOF
+          CURRENT_IMAGE=$CURRENT_IMAGE
+          PREVIOUS_IMAGE=$PREVIOUS_IMAGE
+          EOF
+
+          echo "Current:  $CURRENT_IMAGE"
+          echo "Previous: $PREVIOUS_IMAGE"
+
+          echo "Deployment successful"
