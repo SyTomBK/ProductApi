@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Product.Api.Data;
-using System;
 using Serilog;
 using Prometheus;
 

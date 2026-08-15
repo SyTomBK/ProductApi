@@ -129,10 +129,13 @@ jobs:
           fi
 
           echo "Current image: $CURRENT_IMAGE"
+          echo "Previous image: $PREVIOUS_IMAGE"
 
           # Pull new image
 
           export IMAGE_NAME="$IMAGE_NAME"
+
+          export CONNECTION_STRING="Host=host.docker.internal;Port=59999;Database=productdb;Username=postgres;Password=..."
 
           docker compose pull
 
@@ -142,8 +145,11 @@ jobs:
 
           echo "Waiting for application..."
 
+          HEALTHY=false
+
           for i in {1..12}; do
             if curl -f http://localhost:5001/health; then
+              HEALTHY=true
               echo "Health check passed"
               break
             fi
@@ -152,9 +158,29 @@ jobs:
             sleep 5
           done
 
-          # Final health check
-          if ! curl -f http://localhost:5001/health; then
-            echo "Deployment failed"
+          if [ "$HEALTHY" = true ]; then
+            echo "Deployment successful"
+            
+            cat > version.env <<EOF
+            CURRENT_IMAGE=$NEW_IMAGE
+            PREVIOUS_IMAGE=$CURRENT_IMAGE
+            EOF
+
+            echo "Current image:"
+            echo "$NEW_IMAGE"
+
+            echo "Previous image:"
+            echo "$CURRENT_IMAGE"
+
+            exit 0
+          fi
+
+          echo "Deployment failed"
+          echo "Rolling back to previous running version:"
+          echo "$CURRENT_IMAGE"
+         
+          if [ -z "$CURRENT_IMAGE" ]; then
+            echo "No current image available for rollback"
 
             docker compose ps
             docker compose logs --tail=100 api
@@ -162,16 +188,10 @@ jobs:
             exit 1
           fi
 
-          # Deployment successful
-          PREVIOUS_IMAGE="$CURRENT_IMAGE"
-          CURRENT_IMAGE="$IMAGE_NAME"
+          ./rollback.sh "$CURRENT_IMAGE"
 
-          cat > version.env <<EOF
-          CURRENT_IMAGE=$CURRENT_IMAGE
-          PREVIOUS_IMAGE=$PREVIOUS_IMAGE
-          EOF
+          echo "System has been rolled back to:"
 
-          echo "Current:  $CURRENT_IMAGE"
-          echo "Previous: $PREVIOUS_IMAGE"
+          echo "$CURRENT_IMAGE"
 
-          echo "Deployment successful"
+          exit 1

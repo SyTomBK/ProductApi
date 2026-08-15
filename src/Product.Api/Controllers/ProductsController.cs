@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Product.Api.Contracts.Products;
 using Product.Api.Data;
-using Product.Api.Entities;
-using System.Threading.Tasks;
 using ProductEntity = Product.Api.Entities.Product;
 
 namespace Product.Api.Controllers;
