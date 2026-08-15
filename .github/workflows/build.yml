@@ -130,6 +130,7 @@ jobs:
           fi
 
           echo "Current image: $CURRENT_IMAGE"
+          
           echo "Previous image: $PREVIOUS_IMAGE"
 
           # Pull new image
