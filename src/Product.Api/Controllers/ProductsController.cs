@@ -50,6 +50,7 @@ public class ProductsController : ControllerBase
         {
             return NotFound();
         }
+
         return Ok(new ProductResponse
         {
             Id = product.Id,
