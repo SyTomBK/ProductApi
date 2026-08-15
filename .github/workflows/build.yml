@@ -161,13 +161,13 @@ jobs:
             echo "Deployment successful"
             
             cat > version.env <<EOF
-            
-          CURRENT_IMAGE=$NEW_IMAGE
+
+          CURRENT_IMAGE=$IMAGE_NAME
           PREVIOUS_IMAGE=$CURRENT_IMAGE
           EOF
 
             echo "Current image:"
-            echo "$NEW_IMAGE"
+            echo "$IMAGE_NAME"
 
             echo "Previous image:"
             echo "$CURRENT_IMAGE"
