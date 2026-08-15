@@ -108,6 +108,7 @@ jobs:
       - name: Deploy Docker
 
         run: |
+
           set -e
 
           cd /opt/product-api
@@ -160,9 +161,10 @@ jobs:
             echo "Deployment successful"
             
             cat > version.env <<EOF
-            CURRENT_IMAGE=$NEW_IMAGE
-            PREVIOUS_IMAGE=$CURRENT_IMAGE
-            EOF
+            
+          CURRENT_IMAGE=$NEW_IMAGE
+          PREVIOUS_IMAGE=$CURRENT_IMAGE
+          EOF
 
             echo "Current image:"
             echo "$NEW_IMAGE"
