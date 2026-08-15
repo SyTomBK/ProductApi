@@ -135,8 +135,6 @@ jobs:
 
           export IMAGE_NAME="$IMAGE_NAME"
 
-          export CONNECTION_STRING="Host=host.docker.internal;Port=59999;Database=productdb;Username=postgres;Password=..."
-
           docker compose pull
 
           # Start new version
